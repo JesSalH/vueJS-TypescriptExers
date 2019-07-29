@@ -281,14 +281,48 @@
     </div>
   
    
-    <div class="card content-panel">
-      <div class="card-body">
-        <h2 class="card-title">TEMPLATE</h2>
+      <div class="card content-panel">
+            <div class="card-body">
+                <h2 class="card-title"> 20. Filters </h2>
 
-        <p></p>
-        <p></p>
-      </div>
-    </div>
+                <p> In this example, we see how to define filters to apply rendering changes to Vue variables. </p>
+                <p><i> Please notice that these changes are for browser rendering only and don't affect 
+                  the variable value itself. </i></p>
+            </div>
+
+            <div>
+              <p> This is a Span html tag without any filter applied </p>
+               <span v-dColor1> {{ text20 }}  </span>
+            </div>
+
+            <div>
+              <p>This is the same span HTML tag as above, but this time with the 'shortenString' filter applied 
+                with argument '20': </p>
+               <span v-dColor1 > {{ text20 | shorten }}   </span>
+            </div>
+
+        </div>
+
+        <div class="card content-panel">
+            <div class="card-body">
+                <h2 class="card-title"> 21. Search function (computed property) </h2>
+                <p>In this example, we see how to implement a search filter over an array 
+                  with a computed property and 'filter' function.</p>
+
+                <Component5></Component5>
+               
+            </div>
+        </div>
+
+        <div class="card content-panel">
+            <div class="card-body">
+                <h2 class="card-title"> TEMPLATE </h2>
+
+                <p></p>
+                <p></p>
+            </div>
+        </div>
+
 
 
   </div>  
@@ -304,6 +338,7 @@ import Component4 from "./components/component4.vue";
 import ComponentHome from "./components/componentHome.vue";
 import ComponentAway from "./components/componentAway.vue";
 import ComponentScore from "./components/componentScore.vue";
+import Component5 from "./components/component5.vue";
 
 interface Ifruit {
   name?: string;
@@ -321,7 +356,8 @@ interface Ifruit {
     Component4,
     ComponentHome,
     ComponentAway,
-    ComponentScore    
+    ComponentScore,
+    Component5    
   }
 })
 export default class App extends Vue {
@@ -346,6 +382,7 @@ export default class App extends Vue {
   bgc = {
     backgroundColor: ""
   };
+  text20:string;
 
   constructor() {
     super();
@@ -374,6 +411,7 @@ export default class App extends Vue {
     this.myText1 = "Another thext for the component";
     this.temperature = 15;
     this.name12='';
+    this.text20= 'This is a very long string I want to shorten in a sample, just to learn filters';
   }
 
   created(): void {}
