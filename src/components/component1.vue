@@ -5,8 +5,8 @@
 
         <div>
             <span> Name      </span>
-            <input type="text" v-model="textInput1" />
-            <p>My name is {{ textInput1 }}</p>
+            <input type="text" v-model="passedText" />
+            <p>My name is {{ passedText }}</p>
         </div>
 
     </div>
@@ -20,6 +20,11 @@
 
     @Component({
         name: "Component1",
+          props: {
+            passedText: {
+                type: String
+            }
+          },
     })
 
     export default class Component1 extends Vue {

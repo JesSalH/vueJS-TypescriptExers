@@ -124,13 +124,14 @@
           Notice also that if you change the name inside the component, it won't be reflected outside it
           ('cause string is a primitive type and is passed by value)
         </p>
+        <input type="text" v-model="text7">
+        <Component1 v-bind:passedText="text7" ></Component1>
+        <!-- <greeting></greeting> -->
 
-        <greeting></greeting>
-
-        <div>
+        <!-- <div>
           <h3>I am a sample Component #1</h3>
           <greeting></greeting>
-        </div>
+        </div> -->
       </div>
     </div>
 
@@ -298,7 +299,7 @@
             <div>
               <p>This is the same span HTML tag as above, but this time with the 'shortenString' filter applied 
                 with argument '20': </p>
-               <span v-dColor1 > {{ text20 | shorten }}   </span>
+               <span v-dColor1 > {{ text20 | shorten }}  </span>
             </div>
 
         </div>
@@ -311,6 +312,22 @@
 
                 <Component5></Component5>
                
+            </div>
+        </div>
+
+         <div class="card content-panel">
+            <div class="card-body">
+                <h2 class="card-title"> 22. VueX Store Usage </h2>
+
+                <p> In this example, we see how to use VueX store to share a 'state' between different components. </p>
+                <p> <i> Notice how the randomizer button changes the store team names and this is reflected on the components </i> </p>
+                <button @click="changeTeamNames">Randomize Team Names</button>
+                <ComponentHStore v-bind:team="localTeam" v-bind:score="localScore" v-bind:isHomeTeam="true"></ComponentHStore>
+                <ComponentHStore v-bind:team="awayTeam" v-bind:score="awayScore" v-bind:isHomeTeam="false" ></ComponentHStore>
+                <div>
+                    <p><b> {{this.$store.getters.currentHomeScore}} - {{ updateScore }} - {{this.$store.getters.currentAwayScore}} </b></p>
+                </div>
+
             </div>
         </div>
 
@@ -339,6 +356,8 @@ import ComponentHome from "./components/componentHome.vue";
 import ComponentAway from "./components/componentAway.vue";
 import ComponentScore from "./components/componentScore.vue";
 import Component5 from "./components/component5.vue";
+import store from "./store";
+import ComponentHStore from "./componentHStore.vue";
 
 interface Ifruit {
   name?: string;
@@ -348,6 +367,7 @@ interface Ifruit {
 
 @Component({
   name: "App",
+
   components: {
     HelloWorld,
     Component2,
@@ -357,8 +377,12 @@ interface Ifruit {
     ComponentHome,
     ComponentAway,
     ComponentScore,
-    Component5    
-  }
+    Component5,
+    ComponentHStore    
+  },
+  
+  store
+
 })
 export default class App extends Vue {
   age: number;
@@ -377,41 +401,51 @@ export default class App extends Vue {
   temperature: number;
   name12:String;
   backgroundInputText = {
-    backgroundColor: "green"
+  backgroundColor: "green"
   };
   bgc = {
     backgroundColor: ""
   };
   text20:string;
+  localTeam: string;
+  awayTeam: string;
+  localScore: number;
+  awayScore: number;
+  text7: string;  
 
   constructor() {
     super();
 
-    this.age = 25;
-    this.name = "Peter";
-    this.a = 0;
-    this.b = 0;
-    this.c = 0;
-    this.withBorder = false;
-    this.isHidden = true;
-    this.numbers = [
-      { text: "one", active: false },
-      { text: "two", active: false },
-      { text: "three", active: false },
-      { text: "four", active: false }
-    ];
-    this.isChecked = false;
-    this.output = "orange";
-    this.fruits = [
-      { name: "banana", color: "yellow", isAvailable: false },
-      { name: "apple", color: "green", isAvailable: false },
-      { name: "strawberry", color: "red", isAvailable: false }
-    ];
-    this.myTitle = "I am sample component #3";
-    this.myText1 = "Another thext for the component";
-    this.temperature = 15;
-    this.name12='';
-    this.text20= 'This is a very long string I want to shorten in a sample, just to learn filters';
+  this.age = 25;
+  this.name = "Peter";
+  this.a = 0;
+  this.b = 0;
+  this.c = 0;
+  this.withBorder = false;
+  this.isHidden = true;
+  this.numbers = [
+    { text: "one", active: false },
+    { text: "two", active: false },
+    { text: "three", active: false },
+    { text: "four", active: false }
+  ];
+  this.isChecked = false;
+  this.output = "orange";
+  this.fruits = [
+    { name: "banana", color: "yellow", isAvailable: false },
+    { name: "apple", color: "green", isAvailable: false },
+    { name: "strawberry", color: "red", isAvailable: false }
+  ];
+  this.myTitle = "I am sample component #3";
+  this.myText1 = "Another thext for the component";
+  this.temperature = 15;
+  this.name12='';
+  this.text20= 'This is a very long string I want to shorten in a sample, just to learn filters';
+  this.localTeam = this.$store.getters.teamsList[0];;
+  this.awayTeam = this.$store.getters.teamsList[6];;
+  this.localScore = this.$store.getters.currentHomeScore;
+  this.awayScore = this.$store.getters.currentAwayScore;
+  this.text7 = ''; 
   }
 
   created(): void {}
@@ -450,6 +484,18 @@ export default class App extends Vue {
     this.name12 = passedName;
   }
 
+  changeTeamNames():void {
+    let rnd1 = Math.floor((Math.random() * this.$store.getters.teamsList.length));
+    let rnd2 = Math.floor((Math.random() * this.$store.getters.teamsList.length));
+
+    while(rnd1 === rnd2){
+      rnd2 = Math.floor((Math.random() * this.$store.getters.teamsList.length));
+    }
+
+    this.localTeam  = this.$store.getters.teamsList[rnd1];
+    this.awayTeam   = this.$store.getters.teamsList[rnd2];
+  }
+
   //Computed
   get agePlusA(): number {
     let value: number = +this.a + +this.age;
@@ -459,7 +505,7 @@ export default class App extends Vue {
 
   get agePlusC(): number {
     let value: number = +this.c + +this.age;
-    console.log(" calling agePlusC");
+    console.log(" calling agePlusC ");
     return value;
   }
 
@@ -467,7 +513,22 @@ export default class App extends Vue {
     return {
       myBorder: this.withBorder
     };
-  }  
+  }
+  
+   get updateScore(): string {         
+    console.log(" calling update score");
+    let message = '';
+    if (this.$store.getters.currentHomeScore > this.$store.getters.currentAwayScore){
+      message = "Local Team is Winning!";
+    } else if (this.$store.getters.currentHomeScore < this.$store.getters.currentAwayScore){
+      message = "Away Team is Winning!";
+    }
+    else {
+      message = "There is a Draw!";
+    }
+    return message;
+  }
+  
 }
 
 //Component
@@ -478,6 +539,7 @@ Vue.component("greeting", {
     return {
       name: "John"
     };
+  
   }
 });
 </script>
