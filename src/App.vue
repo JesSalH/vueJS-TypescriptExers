@@ -331,6 +331,55 @@
             </div>
         </div>
 
+        <h5>Multi-Select Testing</h5>
+
+        <!--<div>
+            <multiselect v-model="selectedValue" :options="options"></multiselect>
+        </div>
+
+        <div>
+            <label class="typo__label">Single select</label>
+            <multiselect v-model="selectedValue" :options="options" :searchable="false" :close-on-select="false" :show-labels="false" placeholder="Pick a value"></multiselect>
+            <pre class="language-json"><code>{{ selectedValue  }}</code></pre>
+        </div>-->
+
+        <!-- <div>
+          <label class="typo__label">Single select / dropdown</label>
+          <multiselect v-model="selectedValue" deselect-label="Can't remove this value" track-by="name" label="name" placeholder="Select one" :options="languageOptions" :searchable="false" :allow-empty="false">
+              <template slot="singleLabel" slot-scope="{ option }">
+                  <strong>{{ option.name }}</strong> is written in <strong>  {{ option.language }}</strong>
+              </template>
+          </multiselect>
+          <pre class="language-json"><code> {{ selectedValue  }}</code></pre>
+        </div>
+
+        <div>
+          <label class="typo__label">Select with search</label>
+          <multiselect v-model="selectedValue" :options="languageOptions" :custom-label="nameWithLang" placeholder="Select one" label="name" track-by="name"></multiselect>
+          <pre class="language-json"><code> {{ value  }} </code></pre>
+        </div>
+
+
+        <div>
+          <label class="typo__label">Simple select / dropdown</label>
+          <multiselect v-model="selectedValue" :options="languageOptions" :multiple="true" :close-on-select="false" :clear-on-select="false" :preserve-search="true" placeholder="Choose a few" label="name" track-by="name" :preselect-first="true">
+              <template slot="selection" slot-scope="{ values, search, isOpen }"><span class="multiselect__single" v-if="values.length &amp;&amp; !isOpen">{{ values.length }} options selected</span></template>
+          </multiselect>
+          <pre class="language-json"><code>{{ selectedValue  }}</code></pre>
+        </div> -->
+
+
+        <div>
+          <label class="typo__label" for="ajax">Async multiselect</label>
+          <multiselect v-model="selectedCountries" id="ajax" label="name" track-by="code" placeholder="Type to search" open-direction="bottom" :options="countries" :multiple="true" :searchable="true" :loading="isLoading" :internal-search="false" :clear-on-select="false" :close-on-select="false" :options-limit="300" :limit="3" :limit-text="limitText" :max-height="600" :show-no-results="false" :hide-selected="true" @search-change="asyncFind">
+            <template slot="tag" slot-scope="{ option, remove }"><span class="custom__tag"><span>{{ option.name }}</span><span class="custom__remove" @click="remove(option)">❌</span></span></template>
+            <template slot="clear" slot-scope="props">
+              <div class="multiselect__clear" v-if="selectedCountries.length" @mousedown.prevent.stop="clearAll(props.search)"></div>
+            </template><span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
+          </multiselect>
+          <pre class="language-json"><code>{{ selectedCountries  }}</code></pre>
+        </div>
+
         <div class="card content-panel">
             <div class="card-body">
                 <h2 class="card-title"> TEMPLATE </h2>
@@ -358,6 +407,11 @@ import ComponentScore from "./components/componentScore.vue";
 import Component5 from "./components/component5.vue";
 import store from "./store";
 import ComponentHStore from "./componentHStore.vue";
+import Multiselect from 'vue-multiselect';
+// import { ajaxFindCountry } from 'Countries-Api';
+
+//register multiselect globally
+Vue.component('multiselect', Multiselect)
 
 interface Ifruit {
   name?: string;
@@ -378,7 +432,8 @@ interface Ifruit {
     ComponentAway,
     ComponentScore,
     Component5,
-    ComponentHStore    
+    ComponentHStore,
+    Multiselect    
   },
   
   store
@@ -411,41 +466,59 @@ export default class App extends Vue {
   awayTeam: string;
   localScore: number;
   awayScore: number;
-  text7: string;  
+  text7: string;
+  selectedValue: string;
+  options: string[];
+  languageOptions: object[];
+  selectedCountries: string[];
+  countries: string[];
+  isLoading: boolean; 
 
   constructor() {
     super();
 
-  this.age = 25;
-  this.name = "Peter";
-  this.a = 0;
-  this.b = 0;
-  this.c = 0;
-  this.withBorder = false;
-  this.isHidden = true;
-  this.numbers = [
-    { text: "one", active: false },
-    { text: "two", active: false },
-    { text: "three", active: false },
-    { text: "four", active: false }
-  ];
-  this.isChecked = false;
-  this.output = "orange";
-  this.fruits = [
-    { name: "banana", color: "yellow", isAvailable: false },
-    { name: "apple", color: "green", isAvailable: false },
-    { name: "strawberry", color: "red", isAvailable: false }
-  ];
-  this.myTitle = "I am sample component #3";
-  this.myText1 = "Another thext for the component";
-  this.temperature = 15;
-  this.name12='';
-  this.text20= 'This is a very long string I want to shorten in a sample, just to learn filters';
-  this.localTeam = this.$store.getters.teamsList[0];;
-  this.awayTeam = this.$store.getters.teamsList[6];;
-  this.localScore = this.$store.getters.currentHomeScore;
-  this.awayScore = this.$store.getters.currentAwayScore;
-  this.text7 = ''; 
+    this.age = 25;
+    this.name = "Peter";
+    this.a = 0;
+    this.b = 0;
+    this.c = 0;
+    this.withBorder = false;
+    this.isHidden = true;
+    this.numbers = [
+      { text: "one", active: false },
+      { text: "two", active: false },
+      { text: "three", active: false },
+      { text: "four", active: false }
+    ];
+    this.isChecked = false;
+    this.output = "orange";
+    this.fruits = [
+      { name: "banana", color: "yellow", isAvailable: false },
+      { name: "apple", color: "green", isAvailable: false },
+      { name: "strawberry", color: "red", isAvailable: false }
+    ];
+    this.myTitle = "I am sample component #3";
+    this.myText1 = "Another thext for the component";
+    this.temperature = 15;
+    this.name12='';
+    this.text20= 'This is a very long string I want to shorten in a sample, just to learn filters';
+    this.localTeam = this.$store.getters.teamsList[0];;
+    this.awayTeam = this.$store.getters.teamsList[6];;
+    this.localScore = this.$store.getters.currentHomeScore;
+    this.awayScore = this.$store.getters.currentAwayScore;
+    this.text7 = '';
+    this.selectedValue = '';
+    this.options = ['list', 'of', 'options']; 
+    this.languageOptions = [
+        { name: 'Vue.js', language: 'JavaScript' },
+        { name: 'Rails', language: 'Ruby' },
+        { name: 'Sinatra', language: 'Ruby' },
+        { name: 'Laravel', language: 'PHP', $isDisabled: true },
+        { name: 'Phoenix', language: 'Elixir' }
+    ],
+    this.selectedCountries = [],
+    this.countries = [],
+    this.isLoading = false 
   }
 
   created(): void {}
@@ -528,7 +601,26 @@ export default class App extends Vue {
     }
     return message;
   }
-  
+
+   nameWithLang (obj:{ name:string, language :string}) {
+      return `${obj.name} — [${obj.language}]`
+    }
+
+    limitText (obj:{count:number}) {
+      return `and ${obj.count} other countries`
+    }
+
+    asyncFind (query:any) {
+      this.isLoading = true
+      // ajaxFindCountry(query).then((response:any) => {
+      //   this.countries = response
+      //   this.isLoading = false
+      // })
+    }
+
+    clearAll () {
+      this.selectedCountries = []
+    }  
 }
 
 //Component
