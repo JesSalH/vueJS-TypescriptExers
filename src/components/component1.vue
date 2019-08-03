@@ -15,29 +15,29 @@
 
 <script lang="ts">
 
-    import Vue from "vue";
-    import Component from "vue-class-component";
+import Vue from "vue";
+import Component from "vue-class-component";
 
-    @Component({
-        name: "Component1",
-          props: {
-            passedText: {
-                type: String
-            }
-          },
-    })
-
-    export default class Component1 extends Vue {
-
-        textInput1: string;
-
-        constructor() {
-            super();
-
-            this.textInput1 = 'type here';
+@Component({
+    name: "Component1",
+        props: {
+        passedText: {
+            type: String
         }
+        },
+})
 
-        created(): void { };
+export default class Component1 extends Vue {
+
+    textInput1: string;
+
+    constructor() {
+        super();
+
+        this.textInput1 = 'type here';
     }
+
+    created(): void { };
+}
 
 </script>

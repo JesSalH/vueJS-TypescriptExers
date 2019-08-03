@@ -1,7 +1,7 @@
 <template>
     <div class="card-body" style="text-align: center;">
         <p> {{ team }} </p>
-        <input type="text" size="5" readonly="readonly" v-model="goals">
+        <input type="text" size="5" readonly="readonly" v-model="getGoals">
         <button @click="scoreGoal" >Score Goal</button>
         <hr>
     </div>
@@ -26,34 +26,34 @@
         @Prop({ type: Number }) score!: number;
         @Prop({ type: Boolean }) isHomeTeam!: Boolean;
 
-        goals: number;
-
         constructor() {
-            super();
-            this.goals = 10;
+            super();           
         }
-        created(): void {
-
-            this.goals = this.score;
+        created(): void {            
         }
 
-        scoreGoal(): void {
-            
-            this.goals++;
-
+        scoreGoal(): void {                       
             console.log("Home team?:" + this.isHomeTeam );
 
-            if(this.isHomeTeam) {
-                console.log("enters true");
-                // can't call actions
-                // this.$store.actions.goalHome;
-                  console.log(this.$store.state.homeScore++);
+            if(this.isHomeTeam) {              
+                // don't call directly actions, dispatch them
+                // this.$store.actions.goalHome;                
+                this.$store.dispatch('goalHome');
+            }
+            else{             
+                // don't call directly actions, dispatch them
+                // this.$store.actions.goalHome;  
+                this.$store.dispatch('goalAway');
+            }
+        }
+
+        get getGoals():number {
+
+            if(this.isHomeTeam){
+                return this.$store.getters.currentHomeScore;
             }
             else{
-                console.log("enters false");
-                // can't call actions
-                // this.$store.actions.goalAway;
-                 console.log(this.$store.state.awayScore = this.goals);
+                 return this.$store.getters.currentAwayScore;
             }
         }
         

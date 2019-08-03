@@ -3,7 +3,6 @@
 <template>
     <div>
         <h4> I am sample component #4 </h4>
-
         <div>
             <p> My current name is {{ currName }} </p>
             <span> new name      </span>
@@ -41,8 +40,9 @@
         created(): void {}
         
         updateName(): void {
-                console.log("updating name...");
-                this.$emit('changeName',this.inputName);
+            console.log("updating name...");
+            //(1) eimit is activating the event changeName in the parent and passing a parameter
+            this.$emit('changeName',this.inputName);
         }
     }
 

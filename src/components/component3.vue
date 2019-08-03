@@ -27,6 +27,7 @@
        <p> Given that the number is passed to this component by value, if you change the temperature below, it won't affect the same variable outside
         (and you get a warning too in the console!) </p>
        <p> Temperature: {{ temp }} </p>
+       <button v-on:click="increaseTemp">Increase temperature</button>
         
     </div>
 
@@ -37,12 +38,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-
-interface Ifruit {
-  name?: string;
-  color?: string;
-  isAvailable?: boolean;
-}
+import { Prop } from "vue-property-decorator";
 
 interface Ifruit {
   name?: string;
@@ -52,20 +48,24 @@ interface Ifruit {
 
 @Component({
   name: "Component3",
-  props: {
-    title: String,
-    someText:String,
-//     fruits: Ifruit[] <-- does not recognize the interface
-    fruits: {
-        type:  Array as () => Ifruit[],
-    },
-    temp: {
-        type: Number,
-        required: true
-    }
-  }
+//   props: {
+//     title: String,
+//     someText:String,
+// //     fruits: Ifruit[] <-- does not recognize the interface
+//     fruits: {
+//         type:  Array as () => Ifruit[],
+//     },
+//     temp: {
+//         type: Number,
+//         required: true
+//     }
+//   }
 })
 export default class Component3 extends Vue {
+      @Prop({ type: String }) title!: string;
+      @Prop({ type: String }) someText!: string;
+      @Prop({ type: Array as () => Ifruit[] }) fruits!: object[];
+      @Prop({ type: Number }) temp!: number;
      
   constructor() {
     super();
@@ -76,12 +76,18 @@ export default class Component3 extends Vue {
   addFruit(): void {
 
         //   can't access the received prop
-        // console.log("Trying to add fruit" + this.fruit);                
+        // console.log("Trying to add fruit" + this.fruit);
+         let mango = {
+                name: "mango",
+                color: "yellow",
+                isAvailable: false
+            };
+            this.fruits.push(mango);                
   }
 
   increaseTemp(): void {
     //   can't access the received prop
-    //     this.temp++;
+    this.temp++;
   };
   
 }

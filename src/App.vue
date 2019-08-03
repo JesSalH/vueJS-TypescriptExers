@@ -107,6 +107,7 @@
               type="checkbox"
               v-bind:value="number.text"
               v-bind:id="number.text"
+              
               v-model="number.active"
             />
             <span v-show="number.active">{{number.text}}</span>
@@ -146,13 +147,23 @@
           <span>Input here your favourite colour</span>
 
           <div class="wrapper">
+            <!-- Version with event  -->
             <!-- alternative to v-on:keyup.enter -->
+            <p>Version with event</p>
             <input
-              type="text"
-              ref="colorInput"
+              type="text"            
               v-on:input="bgc.backgroundColor = $event.target.value"
               v-bind:style="bgc"
             />
+             <!-- Version with Ref -->
+             <p>Version with ref</p>
+            <input
+              type="text"
+              ref = "colorInput"            
+              v-on:input="modifyBgc2"
+              v-bind:style="bgc2"
+            />
+
           </div>
 
           <button v-on:click="readRefs">Get Refs</button>
@@ -255,6 +266,8 @@
         <div>  
           <span> Current Name: </span> <input type="text" v-model="name12" v-on:input="currValName12" />        
           <div>
+            <!-- (2) cange name is an emit activated inside the component -->
+            <!-- $event contains the parameter passed with ghe emit (inputName) -->
             <Component4 v-bind:currName="name12" v-on:changeName="updateName($event)" ></Component4>
           </div>
         </div>
@@ -280,6 +293,88 @@
 
       </div>
     </div>
+
+
+    <div class="card content-panel">
+            <div class="card-body">
+                <h2 class="card-title"> 14. Dynamic Components</h2>
+
+                <p>In this example, the component to show is selected from the dropdown. In this way the component shown can be changed dynamically.</p>
+
+                <!-- El valor de selectedComponent será el del value de la opcion seleccionada  -->
+                <select v-model="selectedComponent">
+                    <option value="default">Select</option>
+                    <option value="Component1">Sample 1</option>
+                    <option value="Component2">Sample 2</option>
+                </select>
+
+                <p><i>Please notice that every time you change from sample1 to sample2, you loose everything previously typed in sample1</i></p>
+                <component v-bind:is="selectedComponent"></component>
+
+                <p><i> Instead, using the keep-alive tag, we can retain changes done to sample1 even after switching to sample2 (check below) </i> </p>
+                <keep-alive>
+                    <component v-bind:is="selectedComponent"></component>
+                </keep-alive>
+
+            </div>
+        </div>
+
+
+          <div class="card content-panel">
+            <div class="card-body">
+                <h2 class="card-title">15. Lazy Input Fields v-model </h2>
+                <p>In this example, we show the difference when we apply the .lazy modifier to a v-model of an input field.</p>
+                <div>
+                    <span> Type something and TAB/ENTER to see it applied below:</span>
+                    <input type="text" v-model.lazy="text15Lazy" />
+                </div>
+
+                <div>
+                    <span>Type something and will be immediately shown below:</span>
+                    <input type="text" v-model="text15" />
+                </div>
+
+                <p>Lazy bound string = {{ text15Lazy }}</p>
+                <p>Not Lazy bound string = {{ text15 }}</p>
+
+            </div>
+        </div>
+
+        <div class="card content-panel">
+            <div class="card-body">
+                <h2 class="card-title"> 16. Checkboxes magic (array filling) </h2>
+                <p>In this example, we see how Vue is able to automatically fill an array of objects according to some checkboxes all bound to that array.</p>
+                <div id="checkboxes">
+                    <!-- Magic Array Filling -->
+                    <!-- la gracia de esto es que cada vez que hagamos un check la variable que apunta  -->
+                    <!-- a v-model (un array) cargara (o borrara) ese value -->
+                    <label>Carrot</label>
+                    <input type="checkbox" value="carrot" v-model="foods" />
+                    <label>Salad</label>
+                    <input type="checkbox" value="salad" v-model="foods" />
+                    <label>Fennel</label>
+                    <input type="checkbox" value="fennel" v-model="foods" />
+                </div>
+
+                <div>
+                    <p> Selected vegetables: </p>
+                    <ul>
+                        <li v-for="food in foods"> {{ food }} </li>
+                    </ul>
+                </div>
+
+
+                <p>And here we are using a select to fill an array</p>
+                <label>Authors:</label>
+                <!-- el valor de la option que elijamos se guardara en 'author' -->
+                <select v-model="author">
+                    <option v-for="auth in authorsList"> {{ auth }} </option>
+                </select>
+
+                <p>Author: {{ author }}</p>
+
+            </div>
+        </div>
   
    
       <div class="card content-panel">
@@ -298,7 +393,7 @@
 
             <div>
               <p>This is the same span HTML tag as above, but this time with the 'shortenString' filter applied 
-                with argument '20': </p>
+                with argument '20' XXX: </p>
                <span v-dColor1 > {{ text20 | shorten }}  </span>
             </div>
 
@@ -456,9 +551,12 @@ export default class App extends Vue {
   temperature: number;
   name12:String;
   backgroundInputText = {
-  backgroundColor: "green"
+    backgroundColor: "green"
   };
   bgc = {
+    backgroundColor: ""
+  };
+   bgc2 = {
     backgroundColor: ""
   };
   text20:string;
@@ -472,7 +570,13 @@ export default class App extends Vue {
   languageOptions: object[];
   selectedCountries: string[];
   countries: string[];
-  isLoading: boolean; 
+  isLoading: boolean;
+  selectedComponent: string;
+  text15Lazy: string = '';
+  text15: string = '';
+  foods: string[]; 
+  authorsList: string[]; 
+  author: string = '';
 
   constructor() {
     super();
@@ -502,6 +606,9 @@ export default class App extends Vue {
     this.temperature = 15;
     this.name12='';
     this.text20= 'This is a very long string I want to shorten in a sample, just to learn filters';
+    this.selectedComponent = '';
+    this.foods = [];   
+    this.authorsList = ['The Net Ninja', 'The Angular Avenger', 'The Vue Vindicator'];
     this.localTeam = this.$store.getters.teamsList[0];;
     this.awayTeam = this.$store.getters.teamsList[6];;
     this.localScore = this.$store.getters.currentHomeScore;
@@ -517,8 +624,15 @@ export default class App extends Vue {
         { name: 'Phoenix', language: 'Elixir' }
     ],
     this.selectedCountries = [],
-    this.countries = [],
-    this.isLoading = false 
+    this.countries = [
+      'Albania',
+      'Armenia',
+      'Argentina',
+      'Brazil',
+      'Roamnia'
+    ],
+    this.isLoading = false
+
   }
 
   created(): void {}
@@ -540,7 +654,7 @@ export default class App extends Vue {
     this.temperature++;
   };
 
-  //refs
+  //ref
   readRefs(): void {
     console.log(
       "Current output: " + (this.$refs.colorInput as HTMLInputElement).value
@@ -549,10 +663,17 @@ export default class App extends Vue {
     this.output = (this.$refs.colorInput as HTMLInputElement).value;
   }
 
+  //ref
+  modifyBgc2(): void {
+
+    this.bgc2.backgroundColor = (this.$refs.colorInput as HTMLInputElement).value;
+  }
+
   currValName12(): void {
     console.log("current value of name12: " + this.name12);    
   }
 
+  // passedName is how we are calling the $ event received from the emit (inputName)
   updateName(passedName:String): void {
     this.name12 = passedName;
   }

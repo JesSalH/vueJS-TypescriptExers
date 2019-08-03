@@ -7,6 +7,8 @@
         <div>
             <input type="text" v-model="search" placeholder="Search for a town" />
             <p><b> Visited Towns </b></p>
+            <!-- en lugar de hacer directamente el foreach del array lo hacemos de una funcion -->
+            <!-- que filtra el array original -->
             <p v-for="town in filteredTowns" >{{ town }}</p>
 
         </div>       
@@ -50,10 +52,10 @@
         }
 
         created(): void {}
-        
+        // esta computed property devuelve el array towns filtrado
         get filteredTowns(){
             return this.towns.filter((town) => {
-                return town.match(this.search);
+                return town.match(this.search); //search es el v-model del input text
             });
         }
     }
