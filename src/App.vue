@@ -463,6 +463,39 @@
           <pre class="language-json"><code>{{ selectedValue  }}</code></pre>
         </div> -->
 
+        <!-- <div class="card content-panel">
+            <div class="card-body">
+               <p><b>Custom validation:</b></p>
+
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            Birth Date:
+                        </div>
+                    </div>
+                    <div class="block">
+
+                        <div class="el-date-editor el-input el-input--prefix el-input--suffix el-date-editor--date" data-vv-as="Birth Date" aria-required="false" aria-invalid="false">
+                            
+                            <input type="datetime"
+                                   autocomplete="off"
+                                   name="birthDate"
+                                   id="startDateInput"
+                                   class="el-input__inner"                                  
+                                   v-validate="'required|date_format:DD/MM/YYYY|earlier'"
+                                   >
+                            <span class="el-input__prefix"><i class="el-input__icon el-icon-date"></i></span>
+                            <span class="el-input__suffix"><span class="el-input__suffix-inner"><i class="el-input__icon"></i></span></span>
+                        </div>
+                    </div>
+                </div> 
+
+                <div v-show="errors.has('birthDate')">
+                    {{ errors.first('birthDate') }}
+                </div>
+            </div>
+         </div> -->
+
 
         <div>
           <label class="typo__label" for="ajax">Async multiselect</label>
@@ -484,13 +517,26 @@
             </div>
         </div>
 
+          <div class="card content-panel">
+            <div class="card-body">
+                <h2 class="card-title"> Watchers Example </h2>
+                <p> When the name variable changes the watcher will activate </p>
+                <!-- 'nameW is being watched' -->
+                <p> The name is: {{ nameW }} </p>
+               <!-- <button @click="changeName"> Change Name </button>-->
+                <input type="text" v-model.lazy="nameW" />
+                <p> {{ watchNameMessage }} </p>              
+            </div>
+        </div>
+
 
 
   </div>  
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+//watch added
+import { Component, Vue, Watch } from "vue-property-decorator";
 import HelloWorld from "./components/HelloWorld.vue";
 import Component2 from "./components/component2.vue";
 import Component1 from "./components/component1.vue";
@@ -505,14 +551,40 @@ import ComponentHStore from "./componentHStore.vue";
 import Multiselect from 'vue-multiselect';
 // import { ajaxFindCountry } from 'Countries-Api';
 
+//import 'Validator' and 'moment' libraries
+import { Validator } from 'vee-validate';
+import moment from "moment";
+
 //register multiselect globally
-Vue.component('multiselect', Multiselect)
+Vue.component('multiselect', Multiselect);
+
 
 interface Ifruit {
   name?: string;
   color?: string;
   isAvailable?: boolean;
 }
+
+//our custom validation rule 'earlier' (we have to import 'Validator')
+Validator.extend('earlier', {
+        getMessage(field:any, val:any) {
+            return 'You should be over 18 years old'
+        },
+        validate(value:any, field:any) {
+            console.log('validating ...');
+            console.log('entered date: ' + value);
+            //let dateParts = value.split('-')
+            //let date = new Date(dateParts[2], dateParts[1] -1, dateParts[0]);
+            let date = moment(value, "DD/MM/YYYY");
+            let dateYear = date.year();
+
+            let currentDate = moment();
+            let currentDateYear = currentDate.year();
+
+            return (currentDateYear - dateYear) > 18;
+
+        }
+    })  
 
 @Component({
   name: "App",
@@ -535,6 +607,14 @@ interface Ifruit {
 
 })
 export default class App extends Vue {
+
+  //Watcher as a decorator
+     @Watch('nameW')
+    onChildChanged(val: string, oldVal: string) {
+        //watcher calls this func
+        this.changeName(val, oldVal);
+    }
+
   age: number;
   name: string;
   a: number;
@@ -577,6 +657,8 @@ export default class App extends Vue {
   foods: string[]; 
   authorsList: string[]; 
   author: string = '';
+  nameW: string = '';
+  watchNameMessage: string = '';
 
   constructor() {
     super();
@@ -741,7 +823,11 @@ export default class App extends Vue {
 
     clearAll () {
       this.selectedCountries = []
-    }  
+    }
+    
+     changeName(newP: string, old: string): void {
+        this.watchNameMessage = 'The old name was: ' +old +  ' and now is ' + newP ;
+    }
 }
 
 //Component
